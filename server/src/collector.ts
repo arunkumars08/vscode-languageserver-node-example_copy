@@ -71,6 +71,75 @@ class DependencyCollector implements IDependencyCollector {
     }
 }
 
+class NaivePyParser {
+    constructor(objSam: any) {
+        this.objSam = objSam;
+        this.parser = this.createParser12()
+    }
+
+    objSam: any;
+    parser: Xml2Object;
+    dependencies: Array<IDependency> = [];
+    isDependency: boolean = false;
+    versionStartLine: number = 0;
+    versionStartColumn: number = 0;
+
+    createParser12(): any {
+        let deps = this.dependencies;
+        this.objSam.forEach(function(obj) { 
+            //connection.console.log(s);
+            //let pkgName = Object.keys(obj)[0];
+            let entry: IKeyValueEntry = new KeyValueEntry(obj["pkgName"], {line: 0, column: 0});
+                entry.value = new Variant(ValueType.String, obj["version"]);
+                entry.value_position = {line: obj["line"], column: obj["pos"]};
+                let dep: IDependency = new Dependency(entry);
+                deps.push(dep)
+         
+        });
+        //return deps;
+    }
+
+     parse(): Array<IDependency> {
+        // try {
+        //     this.stream.pipe(this.parser.saxStream);
+        // } catch (e) {
+        //     console.error(e.message)
+        // }
+        return this.dependencies
+    }
+}
+
+let toObject = (arr) => {
+  var rv =  [];
+  for (var i = 0; i < arr.length; ++i){
+    if (arr[i] !== undefined){
+		 var subArr = arr[i].split("==");	
+         var subObj = {}
+         //subObj[subArr[0]] = subArr[1];
+         subObj["pkgName"] = subArr[0];
+         subObj["version"] = subArr[1] || "";
+         subObj["line"] = i+1;
+         subObj["column"] = subArr[0].length +2;
+         //[subArr[0]] = subArr[1];	
+		 rv.push(subObj);
+    }
+  }	
+  return rv;
+}
+/* Process entries found in the txt files and collect all dependency
+ * related information */
+class ReqDependencyCollector {
+    constructor(public classes: Array<string> = ["dependencies"]) {}
+
+    async collect(contents: string): Promise<Array<IDependency>> {
+        let tempArr = contents.split("\n");
+        let objSam = toObject(tempArr);
+        let parser = new NaivePyParser(objSam);
+        let dependencies: Array<IDependency> = parser.parse();
+        return dependencies;
+    }
+}
+
 class NaivePomXmlSaxParser {
     constructor(stream: Stream) {
         this.stream = stream;
@@ -142,4 +211,4 @@ class PomXmlDependencyCollector {
     }
 }
 
-export { IDependencyCollector, DependencyCollector, PomXmlDependencyCollector, IPositionedString, IDependency };
+export { IDependencyCollector, DependencyCollector, PomXmlDependencyCollector, ReqDependencyCollector, IPositionedString, IDependency };

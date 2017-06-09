@@ -10,7 +10,7 @@ import {
 	TextDocuments, Diagnostic, InitializeResult, CodeLens, Command, RequestHandler, CodeActionParams
 } from 'vscode-languageserver';
 import { stream_from_string } from './utils';
-import { DependencyCollector, IDependency, PomXmlDependencyCollector } from './collector';
+import { DependencyCollector, IDependency, PomXmlDependencyCollector, ReqDependencyCollector } from './collector';
 import { EmptyResultEngine, SecurityEngine, DiagnosticsPipeline, codeActionsMap } from './consumers';
 
 import { EmptyResultEngineSenti, SecurityEngineSenti, DiagnosticsPipelineSenti, codeActionsMapSenti } from './sentiment';
@@ -52,7 +52,6 @@ documents.listen(connection);
 let workspaceRoot: string;
 connection.onInitialize((params): InitializeResult => {
     workspaceRoot = params.rootPath;
-    connection.console.log("yay am in!! onInitialize");
     return {
         capabilities: {
             textDocumentSync: documents.syncKind,
@@ -177,8 +176,8 @@ class AnalysisConfig
 
     constructor() {
         // TODO: this needs to be configurable
-        this.server_url = process.env.RECOMMENDER_API_URL || "api-url-not-available-in-lsp";
-        this.api_token = process.env.RECOMMENDER_API_TOKEN || "token-not-available-in-lsp";
+        this.server_url = "https://recommender.api.openshift.io/api/v1";
+        this.api_token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIwbEwwdlhzOVlSVnFaTW93eXc4dU5MUl95cjBpRmFvemRRazlyenEyT1ZVIn0.eyJqdGkiOiI1MTZhNjIwZS1hMjVkLTQ1MjEtOTY4OC1jMjJkMzIxMzk1ZDciLCJleHAiOjE0OTg2NTExMjgsIm5iZiI6MCwiaWF0IjoxNDk2MDU5MTI4LCJpc3MiOiJodHRwczovL3Nzby5vcGVuc2hpZnQuaW8vYXV0aC9yZWFsbXMvZmFicmljOCIsImF1ZCI6ImZhYnJpYzgtb25saW5lLXBsYXRmb3JtIiwic3ViIjoiY2JlYjE0MWMtMmRlYy00ODUyLWFlMjktYzZjOWIzZTIzMGMxIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZmFicmljOC1vbmxpbmUtcGxhdGZvcm0iLCJhdXRoX3RpbWUiOjE0OTYwNTkxMjcsInNlc3Npb25fc3RhdGUiOiJmZjQ0ZDhjNS03ZmIzLTRhMTgtYmZlMy1lNTY1ZGU1YWQxNjgiLCJhY3IiOiIxIiwiY2xpZW50X3Nlc3Npb24iOiJlZTQwY2YxMC1hZTY5LTQ2YzUtYmY3OS1jYmI2YjRkZWQzMDAiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJicm9rZXIiOnsicm9sZXMiOlsicmVhZC10b2tlbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwibmFtZSI6IkFydW5rdW1hciBTIiwiY29tcGFueSI6IlJlZGhhdCIsInByZWZlcnJlZF91c2VybmFtZSI6InNhaWxhcnVua3VtYXIiLCJnaXZlbl9uYW1lIjoiQXJ1bmt1bWFyIiwiZmFtaWx5X25hbWUiOiJTIiwiZW1haWwiOiJzYWlsLmFydW5rdW1hckBnbWFpbC5jb20ifQ.IU7wx0ZfxUTUMnvodMROWDHvvb7YOgd7ELwUcDriwGtrfp52x-oLX3NwMxQssr-NAg-96jp85wOx3eNKWtsBPNbQIcEgR1Vyzk9kqdmzX2dXP2nOA_xTR7_r1PzVMgtfcIuB397avayPY4vFX1mkNj2k5u3Tm7yU30S3fBf6tX9A-0M4cFFtQqlCpT_4TjAx52ecx_8wvRgfJCR5Bc1wC14pR8Vec5CA3mO2OgwHXxk8qx6eSi2Sc2LoHI8wFzUizCMpe93YCLJ_ofIBOAWfJtjV2aW1sszwUCkZejnPYEqb3ehJbEQrj0Txk-qdB6r3Qr2Q4Y0ByDZDt13IR2UdQA";
         this.forbidden_licenses = [];
         this.no_crypto = false;
         this.home_dir = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
@@ -213,67 +212,53 @@ let get_metadata = (ecosystem, name, version, cb) => {
     }
     let part = [ecosystem, name, version].join('/');
 
-    //connection.console.log("serverurl 1"+ config.server_url);
-    //connection.console.log("serverurl 1"+ config.api_token);
     const options = url.parse(config.server_url);
     options['path'] += `/component-analyses/${part}/`;
     options['headers'] = {'Authorization': 'Bearer ' + config.api_token};
     winston.debug('get ' + options['host'] + options['path']);
-    connection.console.log('get ' + options['host'] + options['path']);
+    //winston.debug('token ' + config.api_token);
     https.get(options, function(res){
         let body = '';
-        res.on('data', function(chunk) { body += chunk; });
+        res.on('data', function(chunk) { 
+            winston.debug('chunk ' + chunk);
+            body += chunk; 
+        });
         res.on('end', function(){
             winston.info('status ' + this.statusCode);
             if (this.statusCode == 200 || this.statusCode == 202) {
                 let response = JSON.parse(body);
                 winston.debug('response ' + response);
                 metadataCache[cacheKey] = response;
-                connection.console.log("serverurl 2"+ response);
                 cb(response);
             } else {
-                connection.console.log("serverurl 3");
-                cb(null);
-            }
-        });
-    });
-
-    //make_sentiments_call(name, cacheKey);
-    // connection.console.log("in sentiment call");
-
-    // let options1 = "http://sentiment-http-sentiment-score.dev.rdu2c.fabric8.io/api/v1.0";
-    // options1 += "/getsentimentanalysis?package="+name;
-    //options['headers'] = {'Authorization': 'Bearer ' + config.api_token};
-    //winston.debug('get sentiment' + options1['host'] + options1['path']);
-    
-};
-
-let sentiment_api_call = (ecosystem, name, version, cb) =>{
-    connection.console.log('get sentiment');
-
-    http.get("http://sentiment-http-sentiment-score.dev.rdu2c.fabric8.io/api/v1.0/getsentimentanalysis/?package="+name, function(res){
-        let body = '';
-        connection.console.log("Got res: " +res);
-        res.on('data', function(chunk) { 
-            body += chunk; 
-            connection.console.log("Got chunk: " +chunk);
-        });
-        res.on('end', function(){
-            winston.info('status ' + this.statusCode);
-            connection.console.log("serverurl sentiment status" + this.statusCode);
-            if (this.statusCode == 200 || this.statusCode == 202) {
-                let response = JSON.parse(body);
-                winston.debug('response ' + response);
-                //metadataCache[cacheKey] = response;
-                connection.console.log("serverurl sentiment 2"+ response);
-                cb(response);
-            } else {
-                connection.console.log("serverurl sentiment 3");
                 cb(null);
             }
         });
     }).on('error', function(e) {
-        connection.console.log("Got error: " + e.message);
+        winston.info("Got error: " + e.message);
+    });
+};
+
+let sentiment_api_call = (ecosystem, name, version, cb) =>{
+
+    http.get("http://sentiment-http-sentiment-score.dev.rdu2c.fabric8.io/api/v1.0/getsentimentanalysis/?package="+name, function(res){
+        let body = '';
+        res.on('data', function(chunk) { 
+            body += chunk;
+        });
+        res.on('end', function(){
+            winston.info('status ' + this.statusCode);
+            if (this.statusCode == 200 || this.statusCode == 202) {
+                let response = JSON.parse(body);
+                winston.debug('response ' + response);
+                //metadataCache[cacheKey] = response;
+                cb(response);
+            } else {
+                cb(null);
+            }
+        });
+    }).on('error', function(e) {
+        winston.info("Got error: " + e.message);
     });
 }
 
@@ -313,6 +298,7 @@ files.on(EventStream.Diagnostics, "^package\\.json$", (uri, name, contents) => {
 files.on(EventStream.Diagnostics, "^pom\\.xml$", (uri, name, contents) => {
     /* Convert from readable stream into string */
     let stream = stream_from_string(contents);
+    connection.console.log('mvn stream'+ stream);
     let collector = new PomXmlDependencyCollector();
 
     collector.collect(stream).then((deps) => {
@@ -322,9 +308,20 @@ files.on(EventStream.Diagnostics, "^pom\\.xml$", (uri, name, contents) => {
             connection.sendDiagnostics({uri: uri, diagnostics: diagnostics});
         });
         for (let dependency of deps) {
+            connection.console.log('mvn cmp name'+ dependency.name.value);
             get_metadata('maven', dependency.name.value, dependency.version.value, (response) => {
                 if (response != null) {
                     let pipeline = new DiagnosticsPipeline(DiagnosticsEngines, dependency, config, diagnostics);
+                    pipeline.run(response);
+                }
+                aggregator.aggregate(dependency);
+            });
+
+            winston.debug('on file ');
+
+            sentiment_api_call('maven', dependency.name.value, dependency.version.value, (response) => {
+                if (response != null) {
+                    let pipeline = new DiagnosticsPipelineSenti(DiagnosticsEnginesSenti, dependency, config, diagnostics);
                     pipeline.run(response);
                 }
                 aggregator.aggregate(dependency);
@@ -333,26 +330,78 @@ files.on(EventStream.Diagnostics, "^pom\\.xml$", (uri, name, contents) => {
     });
 });
 
+let toObject = (arr) => {
+  var rv = {"dependencies": {}};
+  for (var i = 0; i < arr.length; ++i){
+    if (arr[i] !== undefined){
+		 var subArr = arr[i].split("==");		
+		 rv.dependencies[subArr[0]] = subArr[1];
+    }
+  }	
+  return rv;
+}
+
+files.on(EventStream.Diagnostics, "^requirements\\.txt$", (uri, name, contents) => {
+    /* Convert from readable stream into string */
+    // let tempArr = contents.split("\n");
+    // let objSam = toObject(tempArr);
+    // let stream = stream_from_string(objSam+"");
+    // connection.console.log('python stream'+ JSON.stringify(objSam));
+    connection.console.log('python in ===========>'+ uri);
+    //TODO :: own implimentation
+    let collector = new ReqDependencyCollector();
+
+    //let stream = stream_from_string(contents);
+    //let collector = new ReqDependencyCollector();
+
+    collector.collect(contents).then((deps) => {
+        let diagnostics = [];
+        /* Aggregate asynchronous requests and send the diagnostics at once */
+        let aggregator = new Aggregator(deps, () => {
+            connection.sendDiagnostics({uri: uri, diagnostics: diagnostics});
+        });
+        for (let dependency of deps) {
+            connection.console.log('python cmp name'+ dependency.name.value);
+            get_metadata('maven', dependency.name.value, dependency.version.value, (response) => {
+                if (response != null) {
+                    let pipeline = new DiagnosticsPipeline(DiagnosticsEngines, dependency, config, diagnostics);
+                    pipeline.run(response);
+                }
+                aggregator.aggregate(dependency);
+            });
+            //TODO :: sentiment analysis
+            sentiment_api_call('maven', dependency.name.value, dependency.version.value, (response) => {
+                if (response != null) {
+                    let pipeline = new DiagnosticsPipelineSenti(DiagnosticsEnginesSenti, dependency, config, diagnostics);
+                    pipeline.run(response);
+                }
+                aggregator.aggregate(dependency);
+            });
+
+        }
+    });
+});
+
 let checkDelay;
 connection.onDidSaveTextDocument((params) => {
+    winston.debug('on save ');
     clearTimeout(checkDelay);
     server.handle_file_event(params.textDocument.uri, server.files.file_data[params.textDocument.uri]);
 });
 
 connection.onDidChangeTextDocument((params) => {
+    winston.debug('on change ');
     /* Update internal state for code lenses */
-    //connection.console.log('It is here in onDidChange' + server.files.file_data[params.textDocument.uri]);
     server.files.file_data[params.textDocument.uri] = params.contentChanges[0].text;
     server.handle_file_event(params.textDocument.uri, server.files.file_data[params.textDocument.uri])
     clearTimeout(checkDelay);
     checkDelay = setTimeout(() => {
-        connection.console.log('Inside onDidChange delay');
         server.handle_file_event(params.textDocument.uri, server.files.file_data[params.textDocument.uri])
     }, 500)
 });
 
 connection.onDidOpenTextDocument((params) => {
-    connection.console.log("didOpenDoc");
+    winston.debug('on file open ');
     server.handle_file_event(params.textDocument.uri, params.textDocument.text);
 });
 
