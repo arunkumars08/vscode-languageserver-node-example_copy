@@ -109,18 +109,25 @@ class NaivePyParser {
     }
 }
 
-let toObject = (arr) => {
-  var rv =  [];
-  for (var i = 0; i < arr.length; ++i){
+let toObject = (arr:any) => {
+  let rv: Array<string> =  [];
+  for (let i:number = 0; i < arr.length; ++i){
     if (arr[i] !== undefined){
-		 var subArr = arr[i].split("==");	
-         var subObj = {}
-         //subObj[subArr[0]] = subArr[1];
+        let line: string = arr[i].replace(/\s/g,'');
+        let lineArr: any;
+        let lineStr: string;
+         if(line.indexOf('#')!== -1){
+            lineArr = line.split("#");
+            lineStr = lineArr[0];
+         }else{
+            lineStr = line;
+         }
+         let subArr: Array<string>  = lineStr.split(/[==,>=]+/);
+         let subObj:any = {};
          subObj["pkgName"] = subArr[0];
          subObj["version"] = subArr[1] || "";
          subObj["line"] = i+1;
          subObj["column"] = subArr[0].length +2;
-         //[subArr[0]] = subArr[1];	
 		 rv.push(subObj);
     }
   }	

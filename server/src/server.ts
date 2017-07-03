@@ -177,7 +177,7 @@ class AnalysisConfig
     constructor() {
         // TODO: this needs to be configurable
         this.server_url = "https://recommender.api.openshift.io/api/v1";
-        this.api_token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIwbEwwdlhzOVlSVnFaTW93eXc4dU5MUl95cjBpRmFvemRRazlyenEyT1ZVIn0.eyJqdGkiOiI1MTZhNjIwZS1hMjVkLTQ1MjEtOTY4OC1jMjJkMzIxMzk1ZDciLCJleHAiOjE0OTg2NTExMjgsIm5iZiI6MCwiaWF0IjoxNDk2MDU5MTI4LCJpc3MiOiJodHRwczovL3Nzby5vcGVuc2hpZnQuaW8vYXV0aC9yZWFsbXMvZmFicmljOCIsImF1ZCI6ImZhYnJpYzgtb25saW5lLXBsYXRmb3JtIiwic3ViIjoiY2JlYjE0MWMtMmRlYy00ODUyLWFlMjktYzZjOWIzZTIzMGMxIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZmFicmljOC1vbmxpbmUtcGxhdGZvcm0iLCJhdXRoX3RpbWUiOjE0OTYwNTkxMjcsInNlc3Npb25fc3RhdGUiOiJmZjQ0ZDhjNS03ZmIzLTRhMTgtYmZlMy1lNTY1ZGU1YWQxNjgiLCJhY3IiOiIxIiwiY2xpZW50X3Nlc3Npb24iOiJlZTQwY2YxMC1hZTY5LTQ2YzUtYmY3OS1jYmI2YjRkZWQzMDAiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJicm9rZXIiOnsicm9sZXMiOlsicmVhZC10b2tlbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwibmFtZSI6IkFydW5rdW1hciBTIiwiY29tcGFueSI6IlJlZGhhdCIsInByZWZlcnJlZF91c2VybmFtZSI6InNhaWxhcnVua3VtYXIiLCJnaXZlbl9uYW1lIjoiQXJ1bmt1bWFyIiwiZmFtaWx5X25hbWUiOiJTIiwiZW1haWwiOiJzYWlsLmFydW5rdW1hckBnbWFpbC5jb20ifQ.IU7wx0ZfxUTUMnvodMROWDHvvb7YOgd7ELwUcDriwGtrfp52x-oLX3NwMxQssr-NAg-96jp85wOx3eNKWtsBPNbQIcEgR1Vyzk9kqdmzX2dXP2nOA_xTR7_r1PzVMgtfcIuB397avayPY4vFX1mkNj2k5u3Tm7yU30S3fBf6tX9A-0M4cFFtQqlCpT_4TjAx52ecx_8wvRgfJCR5Bc1wC14pR8Vec5CA3mO2OgwHXxk8qx6eSi2Sc2LoHI8wFzUizCMpe93YCLJ_ofIBOAWfJtjV2aW1sszwUCkZejnPYEqb3ehJbEQrj0Txk-qdB6r3Qr2Q4Y0ByDZDt13IR2UdQA";
+        this.api_token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICIwbEwwdlhzOVlSVnFaTW93eXc4dU5MUl95cjBpRmFvemRRazlyenEyT1ZVIn0.eyJqdGkiOiI3YzJkMTNmNy04MTBiLTQ4M2MtYTIzYS1kMGU1MGVhMDU1NDEiLCJleHAiOjE1MDEzMTU4NDQsIm5iZiI6MCwiaWF0IjoxNDk4NzIzODQ0LCJpc3MiOiJodHRwczovL3Nzby5vcGVuc2hpZnQuaW8vYXV0aC9yZWFsbXMvZmFicmljOCIsImF1ZCI6ImZhYnJpYzgtb25saW5lLXBsYXRmb3JtIiwic3ViIjoiYzA0ZGJjNDYtZWNmZC00NzhkLWIzYTUtZDk4OTNkMTI2Mzg4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZmFicmljOC1vbmxpbmUtcGxhdGZvcm0iLCJhdXRoX3RpbWUiOjE0OTg0ODQzMDMsInNlc3Npb25fc3RhdGUiOiI2YjJkMzgxZC02NWY2LTQwMGYtOGIxOC1jOTc5NjNjMTZiMDMiLCJuYW1lIjoiamFpdmFyZGhhbiBLdW1hciIsImdpdmVuX25hbWUiOiJqYWl2YXJkaGFuIiwiZmFtaWx5X25hbWUiOiJLdW1hciIsInByZWZlcnJlZF91c2VybmFtZSI6Impha3VtYXIiLCJlbWFpbCI6Impha3VtYXJAcmVkaGF0LmNvbSIsImFjciI6IjAiLCJhbGxvd2VkLW9yaWdpbnMiOlsiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJicm9rZXIiOnsicm9sZXMiOlsicmVhZC10b2tlbiJdfSwiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwiYXV0aG9yaXphdGlvbiI6eyJwZXJtaXNzaW9ucyI6W3sic2NvcGVzIjpbInJlYWQ6c3BhY2UiLCJhZG1pbjpzcGFjZSJdLCJyZXNvdXJjZV9zZXRfaWQiOiJiMWZlMjlhMS04NTllLTRiMjctOWU4Ni0yODkxMmFlYmQwMTciLCJyZXNvdXJjZV9zZXRfbmFtZSI6Ijg3MGE4ZDg5LTBiM2ItNGQ1MC05ZDAwLTMxMGJiNTczYmYxZSJ9LHsic2NvcGVzIjpbInJlYWQ6c3BhY2UiLCJhZG1pbjpzcGFjZSJdLCJyZXNvdXJjZV9zZXRfaWQiOiIwMmQ4ZWEzMy0wYmMyLTRjNjAtOTE2YS1iN2I3NDI5MGE0YmIiLCJyZXNvdXJjZV9zZXRfbmFtZSI6IjEwZGIzYjNhLWZiZTgtNGQ2Ni1hMWNkLThmOGRkYTAyZGZkYiJ9XX0sImNvbXBhbnkiOiJSZWRIYXQifQ.OiTh86GJ1TvYhb0dWYgkXOUOSp9FcP3dLgYaEgVqOLbY4sjohp39pOxmtTb98GkGgrFv69ztZbqqYlNAUw1lzaID0OsNVmupCo1-2u6MDf7sVOh__lNqoj-jkbFHJ4XOPN1jd5z5CV54Lo0gx5LUrePog6S8TPTCfwb3tgyIb4vuA4-86sEjxoA7QHtl5zCuZqRAM3VD447KUE8eTDj7kdf-2N5lEKnzaZuw1KYAfiDI3v2-FqhemQGTY1HKXk74ElWfwxJk3WcB6nj3k_QLAHHDqn0mYHXMGsl83Fg4VQuWdIJRdrzFFL2pHcM29qd2IsphpO753H4kHNZ4O1jxdg";
         this.forbidden_licenses = [];
         this.no_crypto = false;
         this.home_dir = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
@@ -330,29 +330,19 @@ files.on(EventStream.Diagnostics, "^pom\\.xml$", (uri, name, contents) => {
     });
 });
 
-let toObject = (arr) => {
-  var rv = {"dependencies": {}};
-  for (var i = 0; i < arr.length; ++i){
-    if (arr[i] !== undefined){
-		 var subArr = arr[i].split("==");		
-		 rv.dependencies[subArr[0]] = subArr[1];
-    }
-  }	
-  return rv;
-}
+// let toObject = (arr) => {
+//   var rv = {"dependencies": {}};
+//   for (var i = 0; i < arr.length; ++i){
+//     if (arr[i] !== undefined){
+// 		 var subArr = arr[i].split("==");		
+// 		 rv.dependencies[subArr[0]] = subArr[1];
+//     }
+//   }	
+//   return rv;
+// }
 
 files.on(EventStream.Diagnostics, "^requirements\\.txt$", (uri, name, contents) => {
-    /* Convert from readable stream into string */
-    // let tempArr = contents.split("\n");
-    // let objSam = toObject(tempArr);
-    // let stream = stream_from_string(objSam+"");
-    // connection.console.log('python stream'+ JSON.stringify(objSam));
-    connection.console.log('python in ===========>'+ uri);
-    //TODO :: own implimentation
     let collector = new ReqDependencyCollector();
-
-    //let stream = stream_from_string(contents);
-    //let collector = new ReqDependencyCollector();
 
     collector.collect(contents).then((deps) => {
         let diagnostics = [];
@@ -362,35 +352,34 @@ files.on(EventStream.Diagnostics, "^requirements\\.txt$", (uri, name, contents) 
         });
         for (let dependency of deps) {
             connection.console.log('python cmp name'+ dependency.name.value);
-            get_metadata('maven', dependency.name.value, dependency.version.value, (response) => {
+            get_metadata('pypi', dependency.name.value, dependency.version.value, (response) => {
                 if (response != null) {
                     let pipeline = new DiagnosticsPipeline(DiagnosticsEngines, dependency, config, diagnostics);
                     pipeline.run(response);
                 }
                 aggregator.aggregate(dependency);
             });
-            //TODO :: sentiment analysis
-            sentiment_api_call('maven', dependency.name.value, dependency.version.value, (response) => {
+            
+            sentiment_api_call('pypi', dependency.name.value, dependency.version.value, (response) => {
                 if (response != null) {
                     let pipeline = new DiagnosticsPipelineSenti(DiagnosticsEnginesSenti, dependency, config, diagnostics);
                     pipeline.run(response);
                 }
                 aggregator.aggregate(dependency);
             });
-
         }
     });
 });
 
 let checkDelay;
 connection.onDidSaveTextDocument((params) => {
-    winston.debug('on save ');
+    winston.debug('on save ' + params.textDocument.uri);
     clearTimeout(checkDelay);
     server.handle_file_event(params.textDocument.uri, server.files.file_data[params.textDocument.uri]);
 });
 
 connection.onDidChangeTextDocument((params) => {
-    winston.debug('on change ');
+    winston.debug('on change '+ params.textDocument.uri);
     /* Update internal state for code lenses */
     server.files.file_data[params.textDocument.uri] = params.contentChanges[0].text;
     server.handle_file_event(params.textDocument.uri, server.files.file_data[params.textDocument.uri])
@@ -401,7 +390,7 @@ connection.onDidChangeTextDocument((params) => {
 });
 
 connection.onDidOpenTextDocument((params) => {
-    winston.debug('on file open ');
+    winston.debug('on file open '+ params.textDocument.uri);
     server.handle_file_event(params.textDocument.uri, params.textDocument.text);
 });
 
