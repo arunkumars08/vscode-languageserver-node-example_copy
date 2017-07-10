@@ -262,8 +262,30 @@ let sentiment_api_call = (ecosystem, name, version, cb) =>{
     });
 }
 
+let stack_analysis_call_file_upload = (filename, contents, contentType) => {
+    const options = url.parse(config.server_url);
+    options['method'] = 'POST';
+    options['uri'] = config.server_url +`/stack-analyses/`;
+    options['headers'] = {'Authorization': 'Bearer ' + config.api_token};
+    winston.debug('post ' + options['host'] + options['path']);
+    var req = request.post(options, function (err, resp, body) {
+        if (err) {
+            connection.console.log('Error file upload!'+err);
+        } else {
+            connection.console.log('URL: ' + body);
+        }
+    });
+    var form = req.form();
+    //form.append('manifest[]', fs.createReadStream(filename));
+    form.append('manifest[]', contents, {
+         filename: filename,
+         contentType: contentType
+    });  
+}
 
 files.on(EventStream.Diagnostics, "^package\\.json$", (uri, name, contents) => {
+    /* --- file upload --- */
+    stack_analysis_call_file_upload("package.json", contents, 'application/json'); 
     /* Convert from readable stream into string */
     let stream = stream_from_string(contents);
     let collector = new DependencyCollector(null);
@@ -296,6 +318,8 @@ files.on(EventStream.Diagnostics, "^package\\.json$", (uri, name, contents) => {
 });
 
 files.on(EventStream.Diagnostics, "^pom\\.xml$", (uri, name, contents) => {
+    /* --- file upload --- */
+    stack_analysis_call_file_upload("pom.xml", contents, "text/xml"); 
     /* Convert from readable stream into string */
     let stream = stream_from_string(contents);
     connection.console.log('mvn stream'+ stream);
@@ -330,18 +354,9 @@ files.on(EventStream.Diagnostics, "^pom\\.xml$", (uri, name, contents) => {
     });
 });
 
-// let toObject = (arr) => {
-//   var rv = {"dependencies": {}};
-//   for (var i = 0; i < arr.length; ++i){
-//     if (arr[i] !== undefined){
-// 		 var subArr = arr[i].split("==");		
-// 		 rv.dependencies[subArr[0]] = subArr[1];
-//     }
-//   }	
-//   return rv;
-// }
-
 files.on(EventStream.Diagnostics, "^requirements\\.txt$", (uri, name, contents) => {
+    /* --- file upload --- */
+    stack_analysis_call_file_upload("requirements.txt", contents, "text/plain"); 
     let collector = new ReqDependencyCollector();
 
     collector.collect(contents).then((deps) => {
