@@ -262,25 +262,120 @@ let sentiment_api_call = (ecosystem, name, version, cb) =>{
     });
 }
 
+// let logic = (callback, id, timeout, interval) => {
+
+//     let fnInterval = setInterval (() => {
+//         let returned = new Promise((resolve, reject) => {
+//             callback(id);
+//             resolve();
+//         });
+//         returned.then(() => {
+            
+//             //clearInterval(fnInterval);
+//         });
+//     }, interval);
+
+// }
+
+
+let pollFunc = (fn,id, timeout, interval) => {
+    let startTime = (new Date()).getTime();
+    interval = interval || 1000;
+    let canPoll = true;
+
+    (function p(){
+        canPoll = ((new Date).getTime() - startTime) <= timeout;
+        let funResult = fn(id, p);
+
+        //let a = new Promise()
+        connection.console.log("test func "+ funResult);
+
+        //funResult.()
+
+        // if(!funResult && canPoll){
+        //     setTimeout(p,interval);
+        // }
+    })();
+}
+
+function doSomething(val){
+    return val;
+}
+
+let makeStackAnalysisCall = (id, p): any =>{
+    if(id){
+        // return true;
+        //TODO : make API calls
+        const options = url.parse("http://bayesian-api-bayesian-preview.b6ff.rh-idev.openshiftapps.com");
+       // options['host'] = "http://bayesian-api-bayesian-preview.b6ff.rh-idev.openshiftapps.com";
+        options['path'] += "/api/v1/stack-analyses-v2/"+id;
+        //options['uri'] = "http://bayesian-api-bayesian-preview.b6ff.rh-idev.openshiftapps.com/api/v1/stack-analyses-v2/"+id;
+        options['headers'] = {'Authorization': 'Bearer ' + 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ6RC01N29CRklNVVpzQVdxVW5Jc1Z1X3g3MVZJamQxaXJHa0dVT2lUc0w4In0.eyJqdGkiOiI4OGJiZTY4MS02MmMwLTQ2NjAtYWNmYi0wNTIzNjcxMjNmY2IiLCJleHAiOjE1MDI0MzUwMTgsIm5iZiI6MCwiaWF0IjoxNDk5ODQzMDE4LCJpc3MiOiJodHRwczovL3Nzby5wcm9kLXByZXZpZXcub3BlbnNoaWZ0LmlvL2F1dGgvcmVhbG1zL2ZhYnJpYzgiLCJhdWQiOiJmYWJyaWM4LW9ubGluZS1wbGF0Zm9ybSIsInN1YiI6IjA3MWM4ZjljLTM2YjAtNDg3My1iNGQ2LWQ2NzdiZjIyYTAzYyIsInR5cCI6IkJlYXJlciIsImF6cCI6ImZhYnJpYzgtb25saW5lLXBsYXRmb3JtIiwiYXV0aF90aW1lIjoxNDk5NDI3MjgxLCJzZXNzaW9uX3N0YXRlIjoiMTBlMjI1ODQtOTY2ZS00YzVkLWFlMzctYzI0NDQxMzQxNThiIiwibmFtZSI6IlNhbXV6emFsIENob3VkaHVyeSIsImdpdmVuX25hbWUiOiJTYW11enphbCIsImZhbWlseV9uYW1lIjoiQ2hvdWRodXJ5IiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2FtdXp6YWwiLCJlbWFpbCI6InNhbXV6emFsQHJlZGhhdC5jb20iLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYnJva2VyIjp7InJvbGVzIjpbInJlYWQtdG9rZW4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sImF1dGhvcml6YXRpb24iOnsicGVybWlzc2lvbnMiOlt7InNjb3BlcyI6WyJyZWFkOnNwYWNlIiwiYWRtaW46c3BhY2UiXSwicmVzb3VyY2Vfc2V0X2lkIjoiOTgxNDJkOWUtOWQ5My00MDIwLWFhODMtNWM0YzE1YTE3M2NiIiwicmVzb3VyY2Vfc2V0X25hbWUiOiI2YzE4MTRmZC00MDUzLTQyY2MtYWJkYy1jMGJlZWI0NWIzNTYifV19LCJjb21wYW55IjoiUmVkIEhhdCBJbmRpYSBQdnQgTHRkIn0.TO7eni4ODxiEOT8AjtbSzzx39zFcEc8k3Q44nxxGRzo4WuGYbqYm_Qm9Dy5MMl94Ky0qpLzfixJ2NaioNvv2SKNilQuSxkzElDvuxpgRbQfugIN0zLrhi1ZoA6rLOKDqi7b6nTiAXYOBCA77GAYW0glOWEowgUZiJsghZxwHddtS3OuBe0IdRJF4F66WA8xAxpp0WTZae3rGKM8RyhZMDMOXQJzVKlVJwomOrMzEX1rALRDDnPhMvXQsN9CP9VaCfashruuwjAColcgonloMeg-zb7FWHRFWss0bHvDz8xkYvz-tZ4J8Bnk397aVs4bECgv_UAQY0c7COqZjBXF0XQ'};
+        connection.console.log("stV2 "+ options['host'] +" "+ options['path']);
+        http.get(options, function(res){
+            let body = '';
+            res.on('data', function(chunk) { 
+                body += chunk;
+                connection.console.log(body);
+            });
+            res.on('end', function(){
+                winston.info('status ' + this.statusCode);
+                connection.console.log("status stack-analyses-v2" + this.statusCode);
+                if (this.statusCode == 200 || this.statusCode == 202) {
+                    let response = JSON.parse(body);
+                    winston.debug('response stack-analyses-v2' + response);
+                    //metadataCache[cacheKey] = response;
+                    //cb(response);
+                    //no need to execute further
+                    connection.console.log("am done!!");
+                    //doSomething(true);
+                    
+                    return true;
+                    //callback(true);
+                } else {
+                    //cb(null);
+                    setTimeout(p,1000);
+                    connection.console.log("repeat!!");
+                    return false;
+                    //doSomething(false);
+                }
+            });
+        }).on('error', function(e) {
+            connection.console.log("err done!!"+ e.message);
+            winston.info("Got error: " + e.message);
+            setTimeout(p,1000);
+            return false;
+        });
+
+       // return respStatus;
+    }
+}
+
 let stack_analysis_call_file_upload = (filename, contents, contentType) => {
-    const options = url.parse(config.server_url);
-    options['method'] = 'POST';
-    options['uri'] = config.server_url +`/stack-analyses/`;
-    options['headers'] = {'Authorization': 'Bearer ' + config.api_token};
+    //const options = url.parse(config.server_url);
+    //options['method'] = 'POST';
+    //options['uri'] = config.server_url +`/stack-analyses/`;
+    //options['headers'] = {'Authorization': 'Bearer ' + config.api_token};
+    //TODO :: test V2 stack analysis endpoint
+    const options = {};
+    options['uri'] = "http://bayesian-api-bayesian-preview.b6ff.rh-idev.openshiftapps.com/api/v1/stack-analyses-v2";
+    options['headers'] = {'Authorization': 'Bearer ' + 'eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ6RC01N29CRklNVVpzQVdxVW5Jc1Z1X3g3MVZJamQxaXJHa0dVT2lUc0w4In0.eyJqdGkiOiI4OGJiZTY4MS02MmMwLTQ2NjAtYWNmYi0wNTIzNjcxMjNmY2IiLCJleHAiOjE1MDI0MzUwMTgsIm5iZiI6MCwiaWF0IjoxNDk5ODQzMDE4LCJpc3MiOiJodHRwczovL3Nzby5wcm9kLXByZXZpZXcub3BlbnNoaWZ0LmlvL2F1dGgvcmVhbG1zL2ZhYnJpYzgiLCJhdWQiOiJmYWJyaWM4LW9ubGluZS1wbGF0Zm9ybSIsInN1YiI6IjA3MWM4ZjljLTM2YjAtNDg3My1iNGQ2LWQ2NzdiZjIyYTAzYyIsInR5cCI6IkJlYXJlciIsImF6cCI6ImZhYnJpYzgtb25saW5lLXBsYXRmb3JtIiwiYXV0aF90aW1lIjoxNDk5NDI3MjgxLCJzZXNzaW9uX3N0YXRlIjoiMTBlMjI1ODQtOTY2ZS00YzVkLWFlMzctYzI0NDQxMzQxNThiIiwibmFtZSI6IlNhbXV6emFsIENob3VkaHVyeSIsImdpdmVuX25hbWUiOiJTYW11enphbCIsImZhbWlseV9uYW1lIjoiQ2hvdWRodXJ5IiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2FtdXp6YWwiLCJlbWFpbCI6InNhbXV6emFsQHJlZGhhdC5jb20iLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbIioiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYnJva2VyIjp7InJvbGVzIjpbInJlYWQtdG9rZW4iXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sImF1dGhvcml6YXRpb24iOnsicGVybWlzc2lvbnMiOlt7InNjb3BlcyI6WyJyZWFkOnNwYWNlIiwiYWRtaW46c3BhY2UiXSwicmVzb3VyY2Vfc2V0X2lkIjoiOTgxNDJkOWUtOWQ5My00MDIwLWFhODMtNWM0YzE1YTE3M2NiIiwicmVzb3VyY2Vfc2V0X25hbWUiOiI2YzE4MTRmZC00MDUzLTQyY2MtYWJkYy1jMGJlZWI0NWIzNTYifV19LCJjb21wYW55IjoiUmVkIEhhdCBJbmRpYSBQdnQgTHRkIn0.TO7eni4ODxiEOT8AjtbSzzx39zFcEc8k3Q44nxxGRzo4WuGYbqYm_Qm9Dy5MMl94Ky0qpLzfixJ2NaioNvv2SKNilQuSxkzElDvuxpgRbQfugIN0zLrhi1ZoA6rLOKDqi7b6nTiAXYOBCA77GAYW0glOWEowgUZiJsghZxwHddtS3OuBe0IdRJF4F66WA8xAxpp0WTZae3rGKM8RyhZMDMOXQJzVKlVJwomOrMzEX1rALRDDnPhMvXQsN9CP9VaCfashruuwjAColcgonloMeg-zb7FWHRFWss0bHvDz8xkYvz-tZ4J8Bnk397aVs4bECgv_UAQY0c7COqZjBXF0XQ'};
     winston.debug('post ' + options['host'] + options['path']);
+    connection.console.log('post stack analysis V2' + options['host'] + options['path']);
     var req = request.post(options, function (err, resp, body) {
         if (err) {
             connection.console.log('Error file upload!'+err);
         } else {
             connection.console.log('URL: ' + body);
+            pollFunc(makeStackAnalysisCall,'d27629c462f74fef892a06aa17c11473', 60000, 1000);
         }
     });
     var form = req.form();
-    //form.append('manifest[]', fs.createReadStream(filename));
-    form.append('manifest[]', contents, {
-         filename: filename,
-         contentType: contentType
-    });  
+    form.append('manifest[]', fs.createReadStream(filename));
+    // form.append('manifest[]', contents, {
+    //      filename: filename,
+    //      contentType: contentType
+    // });  
 }
 
 files.on(EventStream.Diagnostics, "^package\\.json$", (uri, name, contents) => {
